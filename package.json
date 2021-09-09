@@ -1,0 +1,39 @@
+{
+  "name": "express-js-api-rbac",
+  "version": "1.0.0",
+  "description": "Code for tutorial on how to implement dynamic RBAC in express js - API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec babel-node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richienabuk/express-js-api-rbac.git"
+  },
+  "keywords": [
+    "nodejs",
+    "expressjs",
+    "tutorials",
+    "rbac"
+  ],
+  "author": "Richie Nabuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/richienabuk/express-js-api-rbac/issues"
+  },
+  "homepage": "https://github.com/richienabuk/express-js-api-rbac#readme",
+  "dependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/node": "^7.15.4",
+    "@babel/preset-env": "^7.15.4",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "sequelize": "^6.6.5",
+    "sequelize-cli": "^6.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
