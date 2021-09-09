@@ -1,14 +1,14 @@
 import authRouter from "./authRouter";
 import express from "express";
+import { sendErrorResponse } from "../utils/sendResponse";
+import adminRouter from "./adminRouter";
 
 export default (app) => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
     app.use('/api/v1/auth', authRouter);
+    app.use('/api/v1', adminRouter);
 
-// Create a catch-all route for testing the installation.
-    app.all('*', (req, res) => res.status(200).send({
-        message: 'Hello World!',
-    }));
+    app.all('*', (req, res) => sendErrorResponse(res, 404, 'Route does not exist'));
 };

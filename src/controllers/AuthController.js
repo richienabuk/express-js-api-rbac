@@ -1,13 +1,14 @@
 import {Op} from 'sequelize';
 import model from '../models';
 import {sendErrorResponse, sendSuccessResponse} from "../utils/sendResponse";
-import {hash} from "../utils/hashing";
+import {hash, hash_compare} from "../utils/hashing";
+import constants from "../utils/constants";
 
 const {User} = model;
 
 export default {
     async signUp(req, res) {
-        const {email, password, name, phone} = req.body;
+        const {email, password, name, phone, role} = req.body;
         try {
             let user = await User.findOne({where: {[Op.or]: [{phone}, {email}]}});
             if (user) {
@@ -26,6 +27,10 @@ export default {
                 phone,
                 settings
             });
+
+            const userRole = await Role.findOne({ where: { name: constants.ROLE_AUTHENTICATED } });
+            newUser.addRole(userRole);
+
             return sendSuccessResponse(res, 201, {
                 user: {
                     id: user.id,
@@ -36,6 +41,37 @@ export default {
         } catch (e) {
             console.error(e);
             return sendErrorResponse(res, 500, 'Could not perform operation at this time, kindly try again later.', e)
+        }
+    },
+
+    async login(req, res) {
+        const { login, password, device_name } = req.body;
+
+        try {
+            const user = await User.findOne({ where: { email: login } });
+
+            if (!user) return sendErrorResponse(res, 404, 'Incorrect login credentials. Kindly check and try again');
+            const checkPassword = hash_compare(hash(password), user.password);
+            if (!checkPassword) {
+                return sendErrorResponse(res, 400, 'Incorrect login credentials. Kindly check and try again');
+            }
+
+            if (user.status !== 'active') {
+                return sendErrorResponse(res, 401, 'Your account has been suspended. Contact admin');
+            }
+
+            const token = await user.newToken();
+            return sendSuccessResponse(res, 200, {
+                token: token.plainTextToken,
+                user: {
+                    name: user.name,
+                    id: user.id,
+                    email: user.email,
+                },
+            }, 'Login successfully');
+        } catch (e) {
+            console.error(e);
+            return sendErrorResponse(res, 500, 'Server error, contact admin to resolve issue', e);
         }
     }
 }
